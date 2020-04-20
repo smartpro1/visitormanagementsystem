@@ -1,6 +1,7 @@
 package com.visitormanagement.payloads;
 
 import javax.persistence.Column;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
@@ -20,7 +21,8 @@ public class AdminRequestPayload {
 	 @Size(min =6, message="password cannot be empty or less than six characters")
 	 private String password;
 	 
-	 
+	 @Transient
+		private String confirmPassword;
 	 
 	 
 	public AdminRequestPayload() {
@@ -52,5 +54,11 @@ public class AdminRequestPayload {
 		this.password = password;
 	}
 	 
-	 
+	public String getConfirmPassword() {
+		return confirmPassword;
+	}
+
+	public void setConfirmPassword(String confirmPassword) {
+		this.confirmPassword = confirmPassword;
+	} 
 }

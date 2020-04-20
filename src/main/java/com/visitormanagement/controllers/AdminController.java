@@ -16,6 +16,7 @@ import com.visitormanagement.payloads.AdminLoginPayload;
 import com.visitormanagement.payloads.AdminRequestPayload;
 import com.visitormanagement.services.AdminService;
 import com.visitormanagement.services.FieldsValidationService;
+import com.visitormanagement.validator.AdminValidator;
 
 @RestController
 @RequestMapping("/api/v1/admin/")
@@ -27,8 +28,14 @@ public class AdminController {
 	@Autowired
 	FieldsValidationService validateFields;
 	
+	@Autowired 
+	private AdminValidator adminValidator;
+	
 	@PostMapping("register")
 	public ResponseEntity<?> registerAdmin(@Valid @RequestBody AdminRequestPayload adminRequest, BindingResult result){
+		// compare passwords
+		adminValidator.validate(adminRequest, result);
+		
 		ResponseEntity<?> errorMap = validateFields.fieldsValidationService(result);
 		if(errorMap != null) return errorMap;
 		Admin newAdmin = adminService.registerAdmin(adminRequest);
