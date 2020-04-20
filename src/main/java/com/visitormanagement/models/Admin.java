@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.PrePersist;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
@@ -37,7 +38,11 @@ public class Admin {
 	 @Column(updatable = false)
 	 private Date created_At;
 	 
-	public Admin(
+	 public Admin() {
+		 
+	 }
+	 
+	  public Admin(
 			@NotBlank(message = "fullname is required") @Size(min = 3, message = "characters must be more than three letters") String fullname,
 			@NotBlank(message = "username is required") @Size(min = 3, message = "username cannot be empty or less than three characters") String username,
 			@NotBlank(message = "email is required") @Size(min = 3, message = "email cannot be empty or less than three characters") String email,
@@ -96,6 +101,9 @@ public class Admin {
 		this.created_At = created_At;
 	}
 	 
-	 
+	@PrePersist
+	protected void onCreate() {
+		this.created_At = new Date();
+	}
 	 
 }
