@@ -8,4 +8,6 @@ import com.visitormanagement.models.VisitorLog;
 @Repository
 public interface VisitorLogRepository extends JpaRepository<VisitorLog, Long>{
 
+	VisitorLog getByTag(String visitorTag);
+
 }

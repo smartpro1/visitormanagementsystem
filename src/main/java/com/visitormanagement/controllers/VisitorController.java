@@ -36,8 +36,12 @@ public class VisitorController {
 		return new ResponseEntity<String>("Visitor's tag is " + tag, HttpStatus.CREATED);
 	}
 	
-	@PostMapping("/{visitorTag}")
+	@PostMapping("logout/{visitorTag}")
 	public ResponseEntity<?> signOutVisitor(@PathVariable String visitorTag){
-		return null;
+		boolean isValidTag = visitorService.signOutVisitor(visitorTag);
+		if(isValidTag) {
+			return new ResponseEntity<String>("visitor successfully logged out", HttpStatus.OK);
+		}
+		return new ResponseEntity<String>("log out declined: invalid tag or visitor", HttpStatus.BAD_REQUEST);
 	}
 }

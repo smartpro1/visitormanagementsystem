@@ -33,7 +33,6 @@ public class VisitorLog {
 	 private String tag;
 	 private String signedBy;
 	 @JsonFormat(pattern = "yyyy-mm-dd")
-	 @Column(updatable = false)
 	 private Date timeOut;
 	 
 	 // @ManyToOneWith Visitor

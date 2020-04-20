@@ -62,9 +62,20 @@ public class VisitorService {
 		return visitorTag;
 	}
 	
+	public boolean signOutVisitor(String visitorTag) {
+		VisitorLog visitorLog = visitorLogRepo.getByTag(visitorTag);
+		if(visitorLog == null) {
+			return false;
+		}
+		
+		visitorLog.setTimeOut(new Date());
+		visitorLogRepo.save(visitorLog);
+		return true;
+	}
+	
 	public String generateVisitorTag() {
 		 int num = (int)(Math.random() * 1000);
-	     String tag = "tag" + Integer.toString(num);
+	     String tag = "TAG" + Integer.toString(num);
 		return tag;
 	}
 	
