@@ -10,4 +10,8 @@ public interface AdminRepository extends JpaRepository<Admin, Long> {
 
 	Admin getByUsernameOrEmail(String username, String password);
 
+	Admin findUserByUsername(String username);
+
+	Admin getById(Long id);
+
 }

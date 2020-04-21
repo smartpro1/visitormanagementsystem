@@ -1,5 +1,6 @@
 package com.visitormanagement.models;
 
+import java.util.Collection;
 import java.util.Date;
 
 import javax.persistence.Column;
@@ -12,10 +13,14 @@ import javax.persistence.Transient;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-public class Admin {
+public class Admin implements UserDetails{
 
 	 @Id
 	 @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -111,6 +116,36 @@ public class Admin {
 	@PrePersist
 	protected void onCreate() {
 		this.created_At = new Date();
+	}
+
+	@Override
+	@JsonIgnore
+	public Collection<? extends GrantedAuthority> getAuthorities() {
+		return null;
+	}
+
+	@Override
+	@JsonIgnore
+	public boolean isAccountNonExpired() {
+		return true;
+	}
+
+	@Override
+	@JsonIgnore
+	public boolean isAccountNonLocked() {
+		return true;
+	}
+
+	@Override
+	@JsonIgnore
+	public boolean isCredentialsNonExpired() {
+		return true;
+	}
+
+	@Override
+	@JsonIgnore
+	public boolean isEnabled() {
+		return true;
 	}
 	 
 }
