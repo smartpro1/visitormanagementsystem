@@ -17,8 +17,8 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.SignatureException;
 import io.jsonwebtoken.UnsupportedJwtException;
 
-import static com.visitormanagement.security.SecurityConstants.EXPIRATION;
-import static com.visitormanagement.security.SecurityConstants.SECRET_KEY;
+import static com.visitormanagement.security.SecurityConstants.EXPIRATION_TIME;
+import static com.visitormanagement.security.SecurityConstants.SECRET;
 
 @Component
 public class JwtTokenProvider {
@@ -26,15 +26,16 @@ public class JwtTokenProvider {
 	public String generateJwtToken(Authentication authentication) {
 		
 		Admin admin = (Admin) authentication.getPrincipal();
-		String adminId = Long.toString(admin.getId());
+		System.out.println("admin in token provider" + admin);
+		
 		
 		Date now = new Date(System.currentTimeMillis());
-		Date expiryDate = new Date(now.getTime() + EXPIRATION);
+		Date expiryDate = new Date(now.getTime() + EXPIRATION_TIME);
 		
+		String adminId = Long.toString(admin.getId());
 	    Map<String, Object> claims = new HashMap<>();
 	    claims.put("id", adminId);
 	    claims.put("username", admin.getUsername());
-	    claims.put("email", admin.getEmail());
 	    claims.put("fullname", admin.getFullname());
 		
 		return Jwts.builder()
@@ -42,7 +43,7 @@ public class JwtTokenProvider {
 				.setClaims(claims)
 				.setIssuedAt(now)
 				.setExpiration(expiryDate)
-				.signWith(SignatureAlgorithm.HS512, SECRET_KEY)
+				.signWith(SignatureAlgorithm.HS512, SECRET)
 				.compact();
 		
 	}
@@ -50,12 +51,12 @@ public class JwtTokenProvider {
 	// validate jwtToken
 	public boolean validateJwtToken(String token) {
 		try {
-			Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token);
+			Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token);
 			return true;
 		} catch (SignatureException ex) {
 			System.out.println("Invalid JWT Signature");
 		}catch (MalformedJwtException  ex) {
-			System.out.println("Invalid JWT Token");
+			System.out.println("Malformed JWT Token");
 		}catch (ExpiredJwtException ex) {
 			System.out.println("Expired JWT Token");
 		}catch (UnsupportedJwtException ex) {
@@ -67,7 +68,7 @@ public class JwtTokenProvider {
 	}
 	
 	public Long getAdminIdFromJwtToken(String token) {
-		Claims claims = Jwts.parser().setSigningKey(SECRET_KEY).parseClaimsJws(token).getBody();
+		Claims claims = Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token).getBody();
 		String adminId = (String)claims.get("id");
 		 return Long.parseLong(adminId);
 		 

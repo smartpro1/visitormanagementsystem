@@ -32,7 +32,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter{
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		try {
-		String jwt = request.getHeader(HEADER_STRING);
+		String bearerToken = request.getHeader(HEADER_STRING);
+		String jwt = bearerToken.substring(7);
+		System.out.println(jwt);
 		if(StringUtils.hasText(jwt) && jwtTokenProvider.validateJwtToken(jwt)) {
 			Long adminId = jwtTokenProvider.getAdminIdFromJwtToken(jwt);
 			Admin adminDetails = customUserDetailsService.loadUserById(adminId);

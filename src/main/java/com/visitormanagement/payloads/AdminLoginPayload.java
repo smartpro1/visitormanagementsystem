@@ -2,13 +2,15 @@ package com.visitormanagement.payloads;
 
 public class AdminLoginPayload {
   
-	private String username;
+	private String usernameOrEmail;
 	private String password;
-	public String getUsername() {
-		return username;
+	
+	
+	public String getUsernameOrEmail() {
+		return usernameOrEmail;
 	}
-	public void setUsername(String username) {
-		this.username = username;
+	public void setUsernameOrEmail(String usernameOrEmail) {
+		this.usernameOrEmail = usernameOrEmail;
 	}
 	public String getPassword() {
 		return password;
@@ -16,7 +18,6 @@ public class AdminLoginPayload {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	
-	
+
 	
 }

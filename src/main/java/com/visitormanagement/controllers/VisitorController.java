@@ -5,6 +5,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,6 +27,7 @@ public class VisitorController {
 	@Autowired 
 	VisitorService visitorService;
 
+	//@PreAuthorize("hasAnyRole('ADMIN', 'SUPER ADMIN')")
 	@PostMapping("register-visitor")
 	public ResponseEntity<?> registerVisitor(@Valid @RequestBody VisitorRequestPayload visitorRequest, BindingResult result){
 		ResponseEntity<?> errorMap = validateFields.fieldsValidationService(result);
@@ -36,6 +38,7 @@ public class VisitorController {
 		return new ResponseEntity<String>("Visitor's tag is " + tag, HttpStatus.CREATED);
 	}
 	
+	//@PreAuthorize("hasAnyRole('ADMIN', 'SUPER ADMIN')")
 	@PostMapping("logout/{visitorTag}")
 	public ResponseEntity<?> signOutVisitor(@PathVariable String visitorTag){
 		boolean isValidTag = visitorService.signOutVisitor(visitorTag);

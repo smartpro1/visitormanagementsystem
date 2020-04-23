@@ -147,5 +147,13 @@ public class Admin implements UserDetails{
 	public boolean isEnabled() {
 		return true;
 	}
+
+	@Override
+	public String toString() {
+		return "Admin [id=" + id + ", fullname=" + fullname + ", username=" + username + ", email=" + email
+				+ ", password=" + password + ", created_At=" + created_At + "]";
+	}
+	
+	
 	 
 }

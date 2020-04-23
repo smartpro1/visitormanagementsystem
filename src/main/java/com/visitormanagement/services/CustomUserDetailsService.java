@@ -16,11 +16,11 @@ public class CustomUserDetailsService implements UserDetailsService{
 	private AdminRepository adminRepo;
 
 	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		Admin admin = adminRepo.findUserByUsername(username);
-		if(admin == null) {
-			throw new UsernameNotFoundException("user not found");
-		}
+	public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
+		Admin admin = adminRepo.getByUsernameOrEmail(usernameOrEmail, usernameOrEmail);
+		if(admin == null) throw new UsernameNotFoundException("user not found");
+		
+		System.out.println(admin);
 		return admin;
 	}
 	

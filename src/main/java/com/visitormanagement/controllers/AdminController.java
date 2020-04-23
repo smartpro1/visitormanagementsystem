@@ -63,7 +63,7 @@ public class AdminController {
 		if(errorMap != null) return errorMap;
 		Authentication authentication = authenticationManager.authenticate(
 				new UsernamePasswordAuthenticationToken(
-						adminLoginRequest.getUsername(), adminLoginRequest.getPassword()));
+						adminLoginRequest.getUsernameOrEmail(), adminLoginRequest.getPassword()));
 		
 		SecurityContextHolder.getContext().setAuthentication(authentication);
 		String jwt = TOKEN_PREFIX + jwtTokenProvider.generateJwtToken(authentication);
