@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.visitormanagement.models.Admin;
+import com.visitormanagement.models.UserPrincipal;
 import com.visitormanagement.repositories.AdminRepository;
 
 @Service
@@ -16,21 +17,22 @@ public class CustomUserDetailsService implements UserDetailsService{
 	private AdminRepository adminRepo;
 
 	@Override
+	@Transactional
 	public UserDetails loadUserByUsername(String usernameOrEmail) throws UsernameNotFoundException {
 		Admin admin = adminRepo.getByUsernameOrEmail(usernameOrEmail, usernameOrEmail);
 		if(admin == null) throw new UsernameNotFoundException("user not found");
 		
-		System.out.println(admin);
-		return admin;
+		return UserPrincipal.grantedUser(admin);
 	}
 	
-	@Transactional
-	public Admin loadUserById(Long id) {
+	//@Transactional
+	// This method is used by JwtAuthenticationFilter
+	public UserDetails loadUserById(Long id) {
 		Admin admin = adminRepo.getById(id);
 		if(admin == null) {
 			throw new UsernameNotFoundException("user not found");
 		}
-		return admin;
+		return UserPrincipal.grantedUser(admin);
 	}
 
 }

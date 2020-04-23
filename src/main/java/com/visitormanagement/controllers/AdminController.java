@@ -5,6 +5,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -46,6 +47,7 @@ public class AdminController {
 	@Autowired
 	private AuthenticationManager authenticationManager;
 	
+	@PreAuthorize("hasRole('ROLE_SUPERADMIN')")
 	@PostMapping("register")
 	public ResponseEntity<?> registerAdmin(@Valid @RequestBody AdminRequestPayload adminRequest, BindingResult result){
 		// compare passwords
@@ -56,6 +58,7 @@ public class AdminController {
 		Admin newAdmin = adminService.registerAdmin(adminRequest);
 		return new ResponseEntity<Admin>(newAdmin, HttpStatus.CREATED);
 	}
+	
 	
 	@PostMapping("login")
 	public ResponseEntity<?> loginAdmin(@Valid @RequestBody AdminLoginPayload adminLoginRequest, BindingResult result) {

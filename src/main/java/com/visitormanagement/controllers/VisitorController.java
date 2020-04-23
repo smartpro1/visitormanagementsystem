@@ -27,7 +27,7 @@ public class VisitorController {
 	@Autowired 
 	VisitorService visitorService;
 
-	//@PreAuthorize("hasAnyRole('ADMIN', 'SUPER ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPERADMIN')")
 	@PostMapping("register-visitor")
 	public ResponseEntity<?> registerVisitor(@Valid @RequestBody VisitorRequestPayload visitorRequest, BindingResult result){
 		ResponseEntity<?> errorMap = validateFields.fieldsValidationService(result);
@@ -38,7 +38,7 @@ public class VisitorController {
 		return new ResponseEntity<String>("Visitor's tag is " + tag, HttpStatus.CREATED);
 	}
 	
-	//@PreAuthorize("hasAnyRole('ADMIN', 'SUPER ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPERADMIN')")
 	@PostMapping("logout/{visitorTag}")
 	public ResponseEntity<?> signOutVisitor(@PathVariable String visitorTag){
 		boolean isValidTag = visitorService.signOutVisitor(visitorTag);

@@ -4,18 +4,15 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
-import com.visitormanagement.models.Admin;
+import com.visitormanagement.models.UserPrincipal;
 
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.SignatureException;
-import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.*;
+
 
 import static com.visitormanagement.security.SecurityConstants.EXPIRATION_TIME;
 import static com.visitormanagement.security.SecurityConstants.SECRET;
@@ -23,14 +20,21 @@ import static com.visitormanagement.security.SecurityConstants.SECRET;
 @Component
 public class JwtTokenProvider {
 	
+	private static final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class);
+	
+    private String jwtSecret = "JWTSUPERSECRETKEY";
+	
+	private int jwtExpirationInMs = 604800000;
+	
 	public String generateJwtToken(Authentication authentication) {
 		
-		Admin admin = (Admin) authentication.getPrincipal();
-		System.out.println("admin in token provider" + admin);
+		UserPrincipal admin = (UserPrincipal) authentication.getPrincipal();
 		
+		//Date now = new Date();
+		//Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
 		
-		Date now = new Date(System.currentTimeMillis());
-		Date expiryDate = new Date(now.getTime() + EXPIRATION_TIME);
+		Date now = new Date();
+		Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
 		
 		String adminId = Long.toString(admin.getId());
 	    Map<String, Object> claims = new HashMap<>();
@@ -38,43 +42,46 @@ public class JwtTokenProvider {
 	    claims.put("username", admin.getUsername());
 	    claims.put("fullname", admin.getFullname());
 		
-		return Jwts.builder()
+		String jws = Jwts.builder()
 				.setSubject(adminId)
 				.setClaims(claims)
 				.setIssuedAt(now)
 				.setExpiration(expiryDate)
-				.signWith(SignatureAlgorithm.HS512, SECRET)
+				.signWith(SignatureAlgorithm.HS512, jwtSecret)
 				.compact();
+		System.out.println("jws generated: " + jws);;
+		return jws;
 		
 	}
 	
 	// validate jwtToken
 	public boolean validateJwtToken(String token) {
+		logger.error("got to validate jwtToken: " + token);
 		try {
-			Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token);
+			Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
 			return true;
 		} catch (SignatureException ex) {
-			System.out.println("Invalid JWT Signature");
+			logger.error("Invalid JWT Signature: " + ex);
 		}catch (MalformedJwtException  ex) {
-			System.out.println("Malformed JWT Token");
+			logger.error("Malformed JWT Token: " + ex);
 		}catch (ExpiredJwtException ex) {
-			System.out.println("Expired JWT Token");
+			logger.error("Expired JWT Token: " + ex);
 		}catch (UnsupportedJwtException ex) {
-			System.out.println("Unsupported JWT Token");
+			logger.error("Unsupported JWT Token: " + ex);
 		}catch (IllegalArgumentException ex) {
-			System.out.println("JWT claims string is empty");
+			logger.error("JWT claims string is empty: " + ex);
 		}
 		return false;
 	}
 	
 	public Long getAdminIdFromJwtToken(String token) {
-		Claims claims = Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token).getBody();
+		Claims claims = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody();
 		String adminId = (String)claims.get("id");
 		 return Long.parseLong(adminId);
-		 
-		 // would test this later
-//		Long adminId = Long.parseLong(claims.getId());
-//		return adminId;
+		
+		// Long adminId = Long.parseLong(claims.getSubject());
+		//	return adminId;
+
 	}
 
 }

@@ -1,26 +1,20 @@
 package com.visitormanagement.models;
 
-import java.util.Collection;
-import java.util.Date;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.PrePersist;
-import javax.persistence.Transient;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+
+
 
 @Entity
-public class Admin implements UserDetails{
+public class Admin{
 
 	 @Id
 	 @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,6 +27,8 @@ public class Admin implements UserDetails{
 	 @Size(min =3, message="username cannot be empty or less than three characters")
 	 @Column(updatable = false, unique = true)
 	 private String username;
+	
+
 	 @NotBlank(message = "email is required")
 	 @Size(min =3, message="email cannot be empty or less than three characters")
 	 @Column(updatable = false, unique = true)
@@ -43,6 +39,12 @@ public class Admin implements UserDetails{
 	 @JsonFormat(pattern = "yyyy-mm-dd")
 	 @Column(updatable = false)
 	 private Date created_At;
+	 
+	 @ManyToMany(fetch = FetchType.EAGER)
+	 @JoinTable(name = "users_roles", 
+			 joinColumns=@JoinColumn(name = "user_id", referencedColumnName = "id"), 
+		     inverseJoinColumns=@JoinColumn(name = "role_id", referencedColumnName = "id")) 
+	private Set<Role> roles = new HashSet<>();
 	 
 	 
 	 
@@ -110,7 +112,13 @@ public class Admin implements UserDetails{
 	}
 	
 	
-	 
+	 public Set<Role> getRoles() {
+			return roles;
+		}
+
+		public void setRoles(Set<Role> roles) {
+			this.roles = roles;
+		}
 	
 
 	@PrePersist
@@ -118,36 +126,7 @@ public class Admin implements UserDetails{
 		this.created_At = new Date();
 	}
 
-	@Override
-	@JsonIgnore
-	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return null;
-	}
-
-	@Override
-	@JsonIgnore
-	public boolean isAccountNonExpired() {
-		return true;
-	}
-
-	@Override
-	@JsonIgnore
-	public boolean isAccountNonLocked() {
-		return true;
-	}
-
-	@Override
-	@JsonIgnore
-	public boolean isCredentialsNonExpired() {
-		return true;
-	}
-
-	@Override
-	@JsonIgnore
-	public boolean isEnabled() {
-		return true;
-	}
-
+	
 	@Override
 	public String toString() {
 		return "Admin [id=" + id + ", fullname=" + fullname + ", username=" + username + ", email=" + email
