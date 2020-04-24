@@ -1,5 +1,7 @@
 package com.visitormanagement.controllers;
 
+import java.security.Principal;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,11 +31,11 @@ public class VisitorController {
 
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPERADMIN')")
 	@PostMapping("register-visitor")
-	public ResponseEntity<?> registerVisitor(@Valid @RequestBody VisitorRequestPayload visitorRequest, BindingResult result){
+	public ResponseEntity<?> registerVisitor(@Valid @RequestBody VisitorRequestPayload visitorRequest, BindingResult result, Principal principal){
 		ResponseEntity<?> errorMap = validateFields.fieldsValidationService(result);
 		if(errorMap != null) return errorMap;
 		
-		String tag = visitorService.registerVisitor(visitorRequest);
+		String tag = visitorService.registerVisitor(visitorRequest, principal.getName());
 
 		return new ResponseEntity<String>("Visitor's tag is " + tag, HttpStatus.CREATED);
 	}

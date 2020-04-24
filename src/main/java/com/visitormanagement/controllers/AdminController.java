@@ -47,7 +47,7 @@ public class AdminController {
 	@Autowired
 	private AuthenticationManager authenticationManager;
 	
-	@PreAuthorize("hasRole('ROLE_SUPERADMIN')")
+	//@PreAuthorize("hasRole('ROLE_SUPERADMIN')")
 	@PostMapping("register")
 	public ResponseEntity<?> registerAdmin(@Valid @RequestBody AdminRequestPayload adminRequest, BindingResult result){
 		// compare passwords

@@ -25,10 +25,10 @@ public class VisitorService {
 	@Autowired
 	AssetLogRepository assetLogRepo;
 
-	public String registerVisitor(VisitorRequestPayload visitorRequest) {
+	public String registerVisitor(VisitorRequestPayload visitorRequest, String username) {
 		
 		String visitorTag = generateVisitorTag();
-		String signedBy = "Admin";
+		String signedBy = username;
 		Date createdAt = new Date();
 		
 		Visitor checkVisitor = visitorRepo.getByPhone(visitorRequest.getPhone());

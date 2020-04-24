@@ -46,7 +46,7 @@ public class AdminService {
 	}
 	
 	private boolean checkIfUsernameOrEmailExists(AdminRequestPayload adminRequest) {
-		Admin admin = adminRepo.getByUsernameOrEmail(adminRequest.getUsername(), adminRequest.getPassword());
+		Admin admin = adminRepo.getByUsernameOrEmail(adminRequest.getUsername(), adminRequest.getEmail());
 		if(admin == null) return false;
 		return true;
 	}
