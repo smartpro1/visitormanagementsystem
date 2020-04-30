@@ -5,7 +5,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+//import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -28,7 +28,7 @@ import com.visitormanagement.validator.AdminValidator;
 
 import static com.visitormanagement.security.SecurityConstants.TOKEN_PREFIX;
 @RestController
-@RequestMapping("/api/v1/admin/")
+@RequestMapping("/api/v1/admin")
 @CrossOrigin
 public class AdminController {
 	
@@ -48,7 +48,7 @@ public class AdminController {
 	private AuthenticationManager authenticationManager;
 	
 	//@PreAuthorize("hasRole('ROLE_SUPERADMIN')")
-	@PostMapping("register")
+	@PostMapping("/register")
 	public ResponseEntity<?> registerAdmin(@Valid @RequestBody AdminRequestPayload adminRequest, BindingResult result){
 		// compare passwords
 		adminValidator.validate(adminRequest, result);
@@ -60,7 +60,7 @@ public class AdminController {
 	}
 	
 	
-	@PostMapping("login")
+	@PostMapping("/login")
 	public ResponseEntity<?> loginAdmin(@Valid @RequestBody AdminLoginPayload adminLoginRequest, BindingResult result) {
 		ResponseEntity<?> errorMap = validateFields.fieldsValidationService(result);
 		if(errorMap != null) return errorMap;

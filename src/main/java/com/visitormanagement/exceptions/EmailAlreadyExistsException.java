@@ -5,10 +5,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @SuppressWarnings("serial")
 @ResponseStatus(HttpStatus.BAD_REQUEST)
-public class UsernameOrEmailException extends RuntimeException{
+public class EmailAlreadyExistsException extends RuntimeException{
 	
-	public UsernameOrEmailException(String message)  {
+	public EmailAlreadyExistsException(String message)  {
 		super(message);
 	}
-
 }

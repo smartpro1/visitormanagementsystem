@@ -7,6 +7,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.visitormanagement.exceptions.EmailAlreadyExistsException;
+import com.visitormanagement.exceptions.UsernameAlreadyExistsException;
 import com.visitormanagement.exceptions.UsernameOrEmailException;
 import com.visitormanagement.models.Admin;
 import com.visitormanagement.models.Role;
@@ -28,10 +30,7 @@ public class AdminService {
 	PasswordEncoder passwordEncoder;
 	
 	public Admin registerAdmin(AdminRequestPayload adminRequest) {
-		boolean checkAdminExistence = checkIfUsernameOrEmailExists(adminRequest);
-		if(checkAdminExistence) {
-			throw new UsernameOrEmailException("Registration declined: Username or Email already taken");
-		}
+		checkIfUsernameOrEmailExists(adminRequest);
 		
 		Admin newAdmin = new Admin(adminRequest.getFullname(), adminRequest.getUsername(), 
 				adminRequest.getEmail(), passwordEncoder.encode(adminRequest.getPassword()));
@@ -45,9 +44,15 @@ public class AdminService {
 		return newAdmin;
 	}
 	
-	private boolean checkIfUsernameOrEmailExists(AdminRequestPayload adminRequest) {
-		Admin admin = adminRepo.getByUsernameOrEmail(adminRequest.getUsername(), adminRequest.getEmail());
-		if(admin == null) return false;
-		return true;
+	private void checkIfUsernameOrEmailExists(AdminRequestPayload adminRequest) {
+		//Admin admin = adminRepo.getByUsernameOrEmail(adminRequest.getUsername(), adminRequest.getEmail());
+		if(adminRepo.existsByUsername(adminRequest.getUsername())) {
+			throw new UsernameAlreadyExistsException("username already exists, please choose another.");
+		}
+		
+		if(adminRepo.existsByEmail(adminRequest.getEmail())) {
+			throw new EmailAlreadyExistsException("email already in use, please choose another.");
+		}
+		
 	}
 }

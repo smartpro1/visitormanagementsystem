@@ -36,7 +36,7 @@ public class VisitorLog {
 	 private Date timeOut;
 	 
 	 // @ManyToOneWith Visitor
-	 @ManyToOne(fetch = FetchType.LAZY)
+	 @ManyToOne(fetch = FetchType.EAGER)
 	 @JoinColumn(name="visitor_id", nullable = false)
 	 @JsonIgnore
 	 private Visitor visitor;

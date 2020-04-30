@@ -41,6 +41,8 @@ public class Visitor {
 	 @JsonFormat(pattern = "yyyy-mm-dd")
 	 @Column(updatable = false)
 	 private Date created_At;
+	 @Column(updatable = false)
+	 private String staffOnDuty;
 	 
 	 // OneToMany with VisitorLog
 	 @OneToMany(fetch= FetchType.LAZY, mappedBy="visitor")
@@ -51,20 +53,37 @@ public class Visitor {
 	}
 	
 	
+	
 
-	public Visitor(
+public Visitor(
 			@NotBlank(message = "fullname is required") @Size(min = 3, message = "characters must be more than three letters") String fullname,
 			@NotBlank(message = "phone number is required") @Size(min = 11, max = 14, message = "invalid phone number") String phone,
 			@NotBlank(message = "address") String address, @NotBlank(message = "sex is required") String sex,
-			Date created_At) {
-		
-		
+			Date created_At, String staffOnDuty) {
 		this.fullname = fullname;
 		this.phone = phone;
 		this.address = address;
 		this.sex = sex;
 		this.created_At = created_At;
+		this.staffOnDuty = staffOnDuty;
 	}
+
+
+
+
+//	public Visitor(
+//			@NotBlank(message = "fullname is required") @Size(min = 3, message = "characters must be more than three letters") String fullname,
+//			@NotBlank(message = "phone number is required") @Size(min = 11, max = 14, message = "invalid phone number") String phone,
+//			@NotBlank(message = "address") String address, @NotBlank(message = "sex is required") String sex,
+//			Date created_At) {
+//		
+//		
+//		this.fullname = fullname;
+//		this.phone = phone;
+//		this.address = address;
+//		this.sex = sex;
+//		this.created_At = created_At;
+//	}
 
 
 

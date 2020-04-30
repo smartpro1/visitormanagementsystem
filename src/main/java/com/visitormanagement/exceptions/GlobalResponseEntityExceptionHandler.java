@@ -10,12 +10,34 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 @ControllerAdvice
 @RestController
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class GlobalResponseEntityExceptionHandler extends ResponseEntityExceptionHandler{
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	
 	@ExceptionHandler
 	public final ResponseEntity<Object> handleUsernameOrEmailException(UsernameOrEmailException ex, WebRequest req){
 		UsernameOrEmailExceptionResponse exceptionResponse = new UsernameOrEmailExceptionResponse(ex.getMessage());
+	    return new ResponseEntity(exceptionResponse, HttpStatus.BAD_REQUEST);
+	}
+	
+	
+	@ExceptionHandler
+	public final ResponseEntity<Object> handleInvalidTagException(InvalidTagException ex, WebRequest req){
+		InvalidTagExceptionResponse exceptionResponse = new InvalidTagExceptionResponse(ex.getMessage());
+	    return new ResponseEntity(exceptionResponse, HttpStatus.BAD_REQUEST);
+	}
+	
+	
+	@ExceptionHandler
+	public final ResponseEntity<Object> handleUsernameAlreadyExistsException(UsernameAlreadyExistsException ex, WebRequest req){
+		UsernameAlreadyExistsExceptionResponse exceptionResponse = new UsernameAlreadyExistsExceptionResponse(ex.getMessage());
+	    return new ResponseEntity(exceptionResponse, HttpStatus.BAD_REQUEST);
+	}
+	
+	
+	@ExceptionHandler
+	public final ResponseEntity<Object> handleEmailAlreadyExistsException(EmailAlreadyExistsException ex, WebRequest req){
+		EmailAlreadyExistsExceptionResponse exceptionResponse = new EmailAlreadyExistsExceptionResponse(ex.getMessage());
 	    return new ResponseEntity(exceptionResponse, HttpStatus.BAD_REQUEST);
 	}
 }

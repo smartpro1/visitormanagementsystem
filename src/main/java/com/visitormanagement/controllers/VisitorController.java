@@ -1,6 +1,7 @@
 package com.visitormanagement.controllers;
 
 import java.security.Principal;
+import java.util.List;
 
 import javax.validation.Valid;
 
@@ -9,18 +10,23 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.visitormanagement.models.Visitor;
+import com.visitormanagement.models.VisitorLog;
 import com.visitormanagement.payloads.VisitorRequestPayload;
 import com.visitormanagement.services.FieldsValidationService;
 import com.visitormanagement.services.VisitorService;
 
 @RestController
-@RequestMapping("/api/v1/visitors/")
+@RequestMapping("/api/v1/visitors")
+@CrossOrigin
 public class VisitorController {
 	
 	@Autowired
@@ -28,6 +34,21 @@ public class VisitorController {
 	
 	@Autowired 
 	VisitorService visitorService;
+	
+	@GetMapping("/registered")
+	public ResponseEntity<List<Visitor>> getAllVisitorsRegisteredByMe(Principal principal){
+		List<Visitor> myRegisteredVisitors = visitorService.findAllVisitorsRegisteredByMe(principal.getName());
+		return new ResponseEntity<List<Visitor>>(myRegisteredVisitors, HttpStatus.OK);
+	}
+	
+    @GetMapping("/logs")
+    public ResponseEntity<List<VisitorLog>> getAllVisitorsLogByMe(Principal principal){
+        List<VisitorLog> myVisitorsLogs = visitorService.findAllVisitorsLogByMe(principal.getName());
+        //return myVisitors;
+        
+        // compare the return structure with
+        return new ResponseEntity<List<VisitorLog>>(myVisitorsLogs, HttpStatus.OK);
+    }
 
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPERADMIN')")
 	@PostMapping("register-visitor")
@@ -43,10 +64,9 @@ public class VisitorController {
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPERADMIN')")
 	@PostMapping("logout/{visitorTag}")
 	public ResponseEntity<?> signOutVisitor(@PathVariable String visitorTag){
-		boolean isValidTag = visitorService.signOutVisitor(visitorTag);
-		if(isValidTag) {
+		visitorService.signOutVisitor(visitorTag);
+		
 			return new ResponseEntity<String>("visitor successfully logged out", HttpStatus.OK);
-		}
-		return new ResponseEntity<String>("log out declined: invalid tag or visitor", HttpStatus.BAD_REQUEST);
+			
 	}
 }

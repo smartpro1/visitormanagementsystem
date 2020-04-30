@@ -22,9 +22,9 @@ public class JwtTokenProvider {
 	
 	private static final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class);
 	
-    private String jwtSecret = "JWTSUPERSECRETKEY";
+    //private String jwtSecret = "JWTSUPERSECRETKEY";
 	
-	private int jwtExpirationInMs = 604800000;
+	//private int jwtExpirationInMs = 604800000;
 	
 	public String generateJwtToken(Authentication authentication) {
 		
@@ -34,7 +34,7 @@ public class JwtTokenProvider {
 		//Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
 		
 		Date now = new Date();
-		Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
+		Date expiryDate = new Date(now.getTime() + EXPIRATION_TIME);
 		
 		String adminId = Long.toString(admin.getId());
 	    Map<String, Object> claims = new HashMap<>();
@@ -47,9 +47,8 @@ public class JwtTokenProvider {
 				.setClaims(claims)
 				.setIssuedAt(now)
 				.setExpiration(expiryDate)
-				.signWith(SignatureAlgorithm.HS512, jwtSecret)
+				.signWith(SignatureAlgorithm.HS512, SECRET)
 				.compact();
-		System.out.println("jws generated: " + jws);;
 		return jws;
 		
 	}
@@ -58,7 +57,7 @@ public class JwtTokenProvider {
 	public boolean validateJwtToken(String token) {
 		logger.error("got to validate jwtToken: " + token);
 		try {
-			Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token);
+			Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token);
 			return true;
 		} catch (SignatureException ex) {
 			logger.error("Invalid JWT Signature: " + ex);
@@ -75,7 +74,7 @@ public class JwtTokenProvider {
 	}
 	
 	public Long getAdminIdFromJwtToken(String token) {
-		Claims claims = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(token).getBody();
+		Claims claims = Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token).getBody();
 		String adminId = (String)claims.get("id");
 		 return Long.parseLong(adminId);
 		

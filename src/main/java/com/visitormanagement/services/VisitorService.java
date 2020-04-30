@@ -1,10 +1,12 @@
 package com.visitormanagement.services;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.visitormanagement.exceptions.InvalidTagException;
 import com.visitormanagement.models.AssetLog;
 import com.visitormanagement.models.Visitor;
 import com.visitormanagement.models.VisitorLog;
@@ -31,10 +33,11 @@ public class VisitorService {
 		String signedBy = username;
 		Date createdAt = new Date();
 		
+		
 		Visitor checkVisitor = visitorRepo.getByPhone(visitorRequest.getPhone());
 		if(checkVisitor == null) {
 			
-			Visitor visitor = initializeVisitor(visitorRequest);
+			Visitor visitor = initializeVisitor(visitorRequest, signedBy);
 			
 			VisitorLog visitorLog = initializeVisitorLog(visitorRequest, visitor, createdAt, visitorTag, signedBy);
 			
@@ -62,15 +65,22 @@ public class VisitorService {
 		return visitorTag;
 	}
 	
-	public boolean signOutVisitor(String visitorTag) {
+	public void signOutVisitor(String visitorTag) {
 		VisitorLog visitorLog = visitorLogRepo.getByTag(visitorTag);
 		if(visitorLog == null) {
-			return false;
+			throw new InvalidTagException("signout declined: invalid visitor tag");
 		}
 		
-		visitorLog.setTimeOut(new Date());
+		
+		
+		visitorLog.setTimeOut(new Date(System.currentTimeMillis()));
 		visitorLogRepo.save(visitorLog);
-		return true;
+		
+	}
+	
+	public List<VisitorLog> findAllVisitorsLogByMe(String adminName) {
+		List<VisitorLog> myVisitors = visitorLogRepo.findBySignedBy(adminName);
+		return myVisitors;
 	}
 	
 	public String generateVisitorTag() {
@@ -79,9 +89,9 @@ public class VisitorService {
 		return tag;
 	}
 	
-	public Visitor initializeVisitor(VisitorRequestPayload visitorRequest) {
+	public Visitor initializeVisitor(VisitorRequestPayload visitorRequest, String adminUsername) {
 		Visitor visitor = new Visitor(visitorRequest.getFullname(), visitorRequest.getPhone(),
-				visitorRequest.getAddress(), visitorRequest.getSex(), new Date());
+				visitorRequest.getAddress(), visitorRequest.getSex(), new Date(), adminUsername);
 		
 		return visitor;
 	}
@@ -98,5 +108,10 @@ public class VisitorService {
 		AssetLog assetLog = new AssetLog(visitorRequest.getAssets(), createdAt, visitorLog);
 		
 		return assetLog;
+	}
+
+	public List<Visitor> findAllVisitorsRegisteredByMe(String adminUsername) {
+		List<Visitor> myRegisteredVisitors = visitorRepo.findByStaffOnDuty(adminUsername);
+		return myRegisteredVisitors;
 	}
 }
