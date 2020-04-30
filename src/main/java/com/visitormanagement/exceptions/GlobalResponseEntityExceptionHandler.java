@@ -40,4 +40,10 @@ public class GlobalResponseEntityExceptionHandler extends ResponseEntityExceptio
 		EmailAlreadyExistsExceptionResponse exceptionResponse = new EmailAlreadyExistsExceptionResponse(ex.getMessage());
 	    return new ResponseEntity(exceptionResponse, HttpStatus.BAD_REQUEST);
 	}
+	
+	@ExceptionHandler
+	public final ResponseEntity<Object> handleInvalidPhoneNumException(InvalidPhoneNumException ex, WebRequest req){
+		InvalidPhoneNumExceptionResponse exceptionResponse = new InvalidPhoneNumExceptionResponse(ex.getMessage());
+	    return new ResponseEntity(exceptionResponse, HttpStatus.BAD_REQUEST);
+	}
 }

@@ -13,5 +13,7 @@ public interface VisitorRepository extends JpaRepository<Visitor, Long>{
 
 List<Visitor> findByStaffOnDuty(String adminUsername);
 
+Visitor findByPhone(String phone);
+
 //com.visitormanagement.services.Visitor findByPhone(int phone);
 }

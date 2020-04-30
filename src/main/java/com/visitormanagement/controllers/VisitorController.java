@@ -49,6 +49,16 @@ public class VisitorController {
         // compare the return structure with
         return new ResponseEntity<List<VisitorLog>>(myVisitorsLogs, HttpStatus.OK);
     }
+    
+    @GetMapping("/{phone}")
+    public ResponseEntity<?> getVisitorByPhoneNum(@PathVariable String phone){
+    	Visitor visitor = visitorService.findVisitorByPhone(phone);
+    	
+    	if(visitor == null) {
+    		return new ResponseEntity<String>("No result found", HttpStatus.OK); 
+    	}
+    	return new ResponseEntity<Visitor>(visitor, HttpStatus.OK); 
+    }
 
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPERADMIN')")
 	@PostMapping("register-visitor")

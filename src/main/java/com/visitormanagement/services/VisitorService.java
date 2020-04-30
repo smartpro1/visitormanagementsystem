@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.visitormanagement.exceptions.InvalidPhoneNumException;
 import com.visitormanagement.exceptions.InvalidTagException;
 import com.visitormanagement.models.AssetLog;
 import com.visitormanagement.models.Visitor;
@@ -65,6 +66,8 @@ public class VisitorService {
 		return visitorTag;
 	}
 	
+	
+	
 	public void signOutVisitor(String visitorTag) {
 		VisitorLog visitorLog = visitorLogRepo.getByTag(visitorTag);
 		if(visitorLog == null) {
@@ -114,4 +117,14 @@ public class VisitorService {
 		List<Visitor> myRegisteredVisitors = visitorRepo.findByStaffOnDuty(adminUsername);
 		return myRegisteredVisitors;
 	}
+	
+	public Visitor findVisitorByPhone(String phone) {
+		if(phone.length() < 11 || phone.length() > 14) {
+			throw new InvalidPhoneNumException("The phone number " + phone + " supplied is invalid.");
+		}
+		Visitor visitor = visitorRepo.findByPhone(phone);
+		return visitor;
+	}
+	
+	
 }
