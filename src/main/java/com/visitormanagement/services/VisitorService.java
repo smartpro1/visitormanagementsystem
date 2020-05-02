@@ -1,11 +1,13 @@
 package com.visitormanagement.services;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.visitormanagement.exceptions.InvalidDateException;
 import com.visitormanagement.exceptions.InvalidPhoneNumException;
 import com.visitormanagement.exceptions.InvalidTagException;
 import com.visitormanagement.models.AssetLog;
@@ -125,6 +127,30 @@ public class VisitorService {
 		Visitor visitor = visitorRepo.findByPhone(phone);
 		return visitor;
 	}
+
+
+
+	public List<VisitorLog> findVisitorsLogsByDateRange(String start, String end) {
+		if(start.length() < 1 || end.length() < 1) {
+			throw new InvalidDateException("Start date or end date cannot be empty");
+		}
+		
+		LocalDate startDate = LocalDate.parse(start);
+		LocalDate endDate = LocalDate.parse(end);
+		if(startDate.isAfter(endDate)) {
+			throw new InvalidDateException("Start date cannot be greater than end date");
+		}
+		
+		List<VisitorLog> visitorsLogs = visitorLogRepo.findByTimeIn(start, end);
+		return visitorsLogs;
+	}
+
+
+
+//	public Visitor findVisitorByFullname(String fullname) {
+//		Visitor visitor = visitorRepo.findByFullname(fullname);
+//		return visitor;
+//	}
 	
 	
 }

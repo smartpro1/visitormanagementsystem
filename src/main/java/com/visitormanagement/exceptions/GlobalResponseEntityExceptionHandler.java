@@ -46,4 +46,12 @@ public class GlobalResponseEntityExceptionHandler extends ResponseEntityExceptio
 		InvalidPhoneNumExceptionResponse exceptionResponse = new InvalidPhoneNumExceptionResponse(ex.getMessage());
 	    return new ResponseEntity(exceptionResponse, HttpStatus.BAD_REQUEST);
 	}
+	
+	@ExceptionHandler
+	public final ResponseEntity<Object> handleInvalidDateException(InvalidDateException ex, WebRequest req){
+		InvalidDateExceptionResponse exceptionResponse = new InvalidDateExceptionResponse(ex.getMessage(), ex.getMessage());
+	    return new ResponseEntity(exceptionResponse, HttpStatus.BAD_REQUEST);
+	}
 }
+
+

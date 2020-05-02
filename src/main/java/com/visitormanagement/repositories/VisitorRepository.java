@@ -3,6 +3,7 @@ package com.visitormanagement.repositories;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.visitormanagement.models.Visitor;
@@ -15,5 +16,4 @@ List<Visitor> findByStaffOnDuty(String adminUsername);
 
 Visitor findByPhone(String phone);
 
-//com.visitormanagement.services.Visitor findByPhone(int phone);
 }

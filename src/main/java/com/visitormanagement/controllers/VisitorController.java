@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.visitormanagement.models.Visitor;
 import com.visitormanagement.models.VisitorLog;
+import com.visitormanagement.payloads.DateRangeRequest;
 import com.visitormanagement.payloads.VisitorRequestPayload;
 import com.visitormanagement.services.FieldsValidationService;
 import com.visitormanagement.services.VisitorService;
@@ -58,6 +59,15 @@ public class VisitorController {
     		return new ResponseEntity<String>("No result found", HttpStatus.OK); 
     	}
     	return new ResponseEntity<Visitor>(visitor, HttpStatus.OK); 
+    }
+    
+    @PostMapping("/track-visitors")
+    public ResponseEntity<?> getVisitorsLogsByDateRange(@RequestBody DateRangeRequest dateRangeRequest){
+    	List<VisitorLog> dateRangeVisitors = visitorService.findVisitorsLogsByDateRange(dateRangeRequest.getStart(), dateRangeRequest.getEnd());
+    	if(dateRangeVisitors == null) {
+    		return new ResponseEntity<String>("No result found", HttpStatus.OK);
+    	}
+    	return new ResponseEntity<List<VisitorLog>>(dateRangeVisitors, HttpStatus.OK);
     }
 
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPERADMIN')")
