@@ -6,6 +6,8 @@ import java.util.List;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -45,9 +47,6 @@ public class VisitorController {
     @GetMapping("/logs")
     public ResponseEntity<List<VisitorLog>> getAllVisitorsLogByMe(Principal principal){
         List<VisitorLog> myVisitorsLogs = visitorService.findAllVisitorsLogByMe(principal.getName());
-        //return myVisitors;
-        
-        // compare the return structure with
         return new ResponseEntity<List<VisitorLog>>(myVisitorsLogs, HttpStatus.OK);
     }
     
@@ -61,13 +60,21 @@ public class VisitorController {
     	return new ResponseEntity<Visitor>(visitor, HttpStatus.OK); 
     }
     
+    //  this works
+ //   @PostMapping("/track-visitors")
+//    public ResponseEntity<?> getVisitorsLogsByDateRange(@RequestBody DateRangeRequest dateRangeRequest){
+//    	List<VisitorLog> dateRangeVisitors = visitorService.findVisitorsLogsByDateRange(dateRangeRequest.getStart(), dateRangeRequest.getEnd());
+//    	if(dateRangeVisitors == null) {
+//    		return new ResponseEntity<String>("No result found", HttpStatus.OK);
+//    	}
+//    	return new ResponseEntity<List<VisitorLog>>(dateRangeVisitors, HttpStatus.OK);
+//    }
+    
     @PostMapping("/track-visitors")
-    public ResponseEntity<?> getVisitorsLogsByDateRange(@RequestBody DateRangeRequest dateRangeRequest){
-    	List<VisitorLog> dateRangeVisitors = visitorService.findVisitorsLogsByDateRange(dateRangeRequest.getStart(), dateRangeRequest.getEnd());
-    	if(dateRangeVisitors == null) {
-    		return new ResponseEntity<String>("No result found", HttpStatus.OK);
-    	}
-    	return new ResponseEntity<List<VisitorLog>>(dateRangeVisitors, HttpStatus.OK);
+    public Page<VisitorLog> getVisitorsLogsByDateRange(@RequestBody DateRangeRequest dateRangeRequest, Pageable pageable){
+    	Page<VisitorLog> dateRangeVisitors = visitorService.findVisitorsLogsByDateRange(dateRangeRequest.getStart(), 
+    			                           dateRangeRequest.getEnd(), pageable);
+    	return dateRangeVisitors;
     }
 
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPERADMIN')")

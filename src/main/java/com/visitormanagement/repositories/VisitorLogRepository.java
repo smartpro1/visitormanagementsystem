@@ -2,6 +2,8 @@ package com.visitormanagement.repositories;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -15,8 +17,12 @@ public interface VisitorLogRepository extends JpaRepository<VisitorLog, Long>{
 
 	List<VisitorLog> findBySignedBy(String adminName);
     
+	// This works
+	//@Query(value="SELECT * FROM visitor_log WHERE time_in BETWEEN ?1 AND ?2", nativeQuery=true)
+	//List<VisitorLog> findByTimeIn(String start, String end);
+
 	@Query(value="SELECT * FROM visitor_log WHERE time_in BETWEEN ?1 AND ?2", nativeQuery=true)
-	List<VisitorLog> findByTimeIn(String start, String end);
+	Page<VisitorLog> findByTimeIn(String start, String end, Pageable pageable);
 	
 	
 	// JPQL

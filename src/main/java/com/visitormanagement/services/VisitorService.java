@@ -1,10 +1,13 @@
 package com.visitormanagement.services;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.visitormanagement.exceptions.InvalidDateException;
@@ -34,7 +37,6 @@ public class VisitorService {
 		
 		String visitorTag = generateVisitorTag();
 		String signedBy = username;
-		Date createdAt = new Date();
 		
 		
 		Visitor checkVisitor = visitorRepo.getByPhone(visitorRequest.getPhone());
@@ -42,25 +44,25 @@ public class VisitorService {
 			
 			Visitor visitor = initializeVisitor(visitorRequest, signedBy);
 			
-			VisitorLog visitorLog = initializeVisitorLog(visitorRequest, visitor, createdAt, visitorTag, signedBy);
+			VisitorLog visitorLog = initializeVisitorLog(visitorRequest, visitor,  visitorTag, signedBy);
 			
 			visitorRepo.save(visitor);	
 			visitorLogRepo.save(visitorLog);
 			
 			if(visitorRequest.getAssets() != null) {
-				AssetLog assetLog = initializeAssetLog(visitorRequest, createdAt, visitorLog);
+				AssetLog assetLog = initializeAssetLog(visitorRequest,  visitorLog);
 				assetLogRepo.save(assetLog);
 			}
 			
 			}
 		
 		if(checkVisitor != null) {
-			VisitorLog visitorLog = initializeVisitorLog(visitorRequest, checkVisitor, createdAt, visitorTag, signedBy);
+			VisitorLog visitorLog = initializeVisitorLog(visitorRequest, checkVisitor,  visitorTag, signedBy);
 			visitorRepo.save(checkVisitor);	
 			visitorLogRepo.save(visitorLog);
 			
 			if(visitorRequest.getAssets() != null) {
-				AssetLog assetLog = initializeAssetLog(visitorRequest, createdAt, visitorLog);
+				AssetLog assetLog = initializeAssetLog(visitorRequest,  visitorLog);
 				assetLogRepo.save(assetLog);
 			}
 		}
@@ -78,7 +80,8 @@ public class VisitorService {
 		
 		
 		
-		visitorLog.setTimeOut(new Date(System.currentTimeMillis()));
+		//visitorLog.setTimeOut(new Date(System.currentTimeMillis()));
+		visitorLog.setTimeOut(LocalDateTime.now());
 		visitorLogRepo.save(visitorLog);
 		
 	}
@@ -96,21 +99,21 @@ public class VisitorService {
 	
 	public Visitor initializeVisitor(VisitorRequestPayload visitorRequest, String adminUsername) {
 		Visitor visitor = new Visitor(visitorRequest.getFullname(), visitorRequest.getPhone(),
-				visitorRequest.getAddress(), visitorRequest.getSex(), new Date(), adminUsername);
+				visitorRequest.getAddress(), visitorRequest.getSex(),  adminUsername);
 		
 		return visitor;
 	}
 	
-	public VisitorLog initializeVisitorLog(VisitorRequestPayload visitorRequest, Visitor visitor, Date createdAt, 
+	public VisitorLog initializeVisitorLog(VisitorRequestPayload visitorRequest, Visitor visitor, 
 			                               String visitorTag, String signedBy) {
 		VisitorLog visitorLog = new VisitorLog(visitorRequest.getWhomToSee(), visitorRequest.getPurpose(),
-                createdAt, visitorTag, signedBy, visitor);
+                 visitorTag, signedBy, visitor);
 		
 		return visitorLog;
 	}
 	
-	public AssetLog initializeAssetLog(VisitorRequestPayload visitorRequest, Date createdAt, VisitorLog visitorLog) {
-		AssetLog assetLog = new AssetLog(visitorRequest.getAssets(), createdAt, visitorLog);
+	public AssetLog initializeAssetLog(VisitorRequestPayload visitorRequest, VisitorLog visitorLog) {
+		AssetLog assetLog = new AssetLog(visitorRequest.getAssets(), visitorLog);
 		
 		return assetLog;
 	}
@@ -128,9 +131,26 @@ public class VisitorService {
 		return visitor;
 	}
 
+// this works
+
+//	public List<VisitorLog> findVisitorsLogsByDateRange(String start, String end) {
+//		if(start.length() < 1 || end.length() < 1) {
+//			throw new InvalidDateException("Start date or end date cannot be empty");
+//		}
+//		
+//		LocalDate startDate = LocalDate.parse(start);
+//		LocalDate endDate = LocalDate.parse(end);
+//		if(startDate.isAfter(endDate)) {
+//			throw new InvalidDateException("Start date cannot be greater than end date");
+//		}
+//		
+//		List<VisitorLog> visitorsLogs = visitorLogRepo.findByTimeIn(start, end);
+//		return visitorsLogs;
+//	}
 
 
-	public List<VisitorLog> findVisitorsLogsByDateRange(String start, String end) {
+
+	public Page<VisitorLog> findVisitorsLogsByDateRange(String start, String end, Pageable pageable) {
 		if(start.length() < 1 || end.length() < 1) {
 			throw new InvalidDateException("Start date or end date cannot be empty");
 		}
@@ -141,7 +161,7 @@ public class VisitorService {
 			throw new InvalidDateException("Start date cannot be greater than end date");
 		}
 		
-		List<VisitorLog> visitorsLogs = visitorLogRepo.findByTimeIn(start, end);
+		Page<VisitorLog> visitorsLogs = visitorLogRepo.findByTimeIn(start, end, pageable);
 		return visitorsLogs;
 	}
 

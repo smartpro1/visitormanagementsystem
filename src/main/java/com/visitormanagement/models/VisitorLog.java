@@ -1,6 +1,6 @@
 package com.visitormanagement.models;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -27,13 +27,13 @@ public class VisitorLog {
 	 private String whomToSee;
 	 @NotBlank(message = "you must indicate your purpose of visit")
 	 private String purpose;
-	 @JsonFormat(pattern = "yyyy-mm-dd")
+	 
 	 @Column(updatable = false)
-	 private Date timeIn;
+	 private LocalDateTime timeIn;
 	 private String tag;
 	 private String signedBy;
-	 @JsonFormat(pattern = "yyyy-mm-dd")
-	 private Date timeOut;
+	
+	 private LocalDateTime timeOut;
 	 
 	 // @ManyToOneWith Visitor
 	 @ManyToOne(fetch = FetchType.EAGER)
@@ -51,11 +51,10 @@ public class VisitorLog {
 	
 
 	public VisitorLog(@NotBlank(message = "you must indicate who you want to see") String whomToSee,
-			@NotBlank(message = "you must indicate your purpose of visit") String purpose, Date timeIn, String tag,
+			@NotBlank(message = "you must indicate your purpose of visit") String purpose, String tag,
 			String signedBy, Visitor visitor) {
 		this.whomToSee = whomToSee;
 		this.purpose = purpose;
-		this.timeIn = timeIn;
 		this.tag = tag;
 		this.signedBy = signedBy;
 		this.visitor = visitor;
@@ -89,11 +88,11 @@ public class VisitorLog {
 		this.purpose = purpose;
 	}
 
-	public Date getTimeIn() {
+	public LocalDateTime getTimeIn() {
 		return timeIn;
 	}
 
-	public void setTimeIn(Date timeIn) {
+	public void setTimeIn(LocalDateTime timeIn) {
 		this.timeIn = timeIn;
 	}
 
@@ -113,11 +112,11 @@ public class VisitorLog {
 		this.signedBy = signedBy;
 	}
 
-	public Date getTimeOut() {
+	public LocalDateTime getTimeOut() {
 		return timeOut;
 	}
 
-	public void setTimeOut(Date timeOut) {
+	public void setTimeOut(LocalDateTime timeOut) {
 		this.timeOut = timeOut;
 	}
 
@@ -141,12 +140,12 @@ public class VisitorLog {
 
 	@PrePersist
 	protected void onCreate() {
-		this.timeIn = new Date();
+		this.timeIn = LocalDateTime.now();
 	}
 	
 	@PreUpdate
 	protected void onUpdate() {
-		this.timeOut = new Date();
+		this.timeOut = LocalDateTime.now();
 	}
 	 
 	 

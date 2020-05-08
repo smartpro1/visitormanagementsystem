@@ -1,7 +1,7 @@
 package com.visitormanagement.models;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.Column;
@@ -38,9 +38,8 @@ public class Visitor {
 	 @NotBlank(message = "sex is required")
 	 @Column(updatable = false)
 	 private String sex;
-	 @JsonFormat(pattern = "yyyy-mm-dd")
 	 @Column(updatable = false)
-	 private Date created_At;
+	 private LocalDateTime created_At;
 	 @Column(updatable = false)
 	 private String staffOnDuty;
 	 
@@ -59,12 +58,11 @@ public Visitor(
 			@NotBlank(message = "fullname is required") @Size(min = 3, message = "characters must be more than three letters") String fullname,
 			@NotBlank(message = "phone number is required") @Size(min = 11, max = 14, message = "invalid phone number") String phone,
 			@NotBlank(message = "address") String address, @NotBlank(message = "sex is required") String sex,
-			Date created_At, String staffOnDuty) {
+		      String staffOnDuty) {
 		this.fullname = fullname;
 		this.phone = phone;
 		this.address = address;
 		this.sex = sex;
-		this.created_At = created_At;
 		this.staffOnDuty = staffOnDuty;
 	}
 
@@ -127,11 +125,11 @@ public Visitor(
 		this.sex = sex;
 	}
 
-	public Date getCreated_At() {
+	public LocalDateTime getCreated_At() {
 		return created_At;
 	}
 
-	public void setCreated_At(Date created_At) {
+	public void setCreated_At(LocalDateTime created_At) {
 		this.created_At = created_At;
 	}
 
@@ -143,10 +141,10 @@ public Visitor(
 		this.visitorLogs = visitorLogs;
 	}
 	 
-	 @PrePersist
-	 protected void onCreate() {
-		 this.created_At = new Date();
-	 }
+	@PrePersist
+	protected void onCreate(){
+		this.created_At = LocalDateTime.now();
+	}
 	 
 	 
 

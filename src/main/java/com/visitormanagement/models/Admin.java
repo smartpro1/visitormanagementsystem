@@ -1,7 +1,7 @@
 package com.visitormanagement.models;
 
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -36,9 +36,9 @@ public class Admin{
 	 @NotBlank(message = "password is required")
 	 @Size(min =6, message="password cannot be empty or less than six characters")
 	 private String password;
-	 @JsonFormat(pattern = "yyyy-mm-dd")
+	 
 	 @Column(updatable = false)
-	 private Date created_At;
+	 private LocalDateTime created_At;
 	 
 	 @ManyToMany(fetch = FetchType.EAGER)
 	 @JoinTable(name = "users_roles", 
@@ -103,11 +103,11 @@ public class Admin{
 		this.password = password;
 	}
 
-	public Date getCreated_At() {
+	public LocalDateTime getCreated_At() {
 		return created_At;
 	}
 
-	public void setCreated_At(Date created_At) {
+	public void setCreated_At(LocalDateTime created_At) {
 		this.created_At = created_At;
 	}
 	
@@ -123,7 +123,7 @@ public class Admin{
 
 	@PrePersist
 	protected void onCreate() {
-		this.created_At = new Date();
+		this.created_At = LocalDateTime.now();
 	}
 
 	

@@ -1,6 +1,6 @@
 package com.visitormanagement.models;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,7 +12,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
@@ -23,9 +23,9 @@ public class AssetLog {
 	 private Long id;
 	 
 	 private String assets;
-	 @JsonFormat(pattern = "yyyy-mm-dd")
+	
 	 @Column(updatable = false)
-	 private Date created_At;
+	 private LocalDateTime created_At;
 	 
 	 // @OneToOne with VisitorLog
 	 @OneToOne(fetch = FetchType.LAZY)
@@ -39,9 +39,8 @@ public class AssetLog {
 	 
 	 
 
-	public AssetLog(String assets, Date created_At, VisitorLog visitorLog) {
+	public AssetLog(String assets, VisitorLog visitorLog) {
 		this.assets = assets;
-		this.created_At = created_At;
 		this.visitorLog = visitorLog;
 	}
 
@@ -63,11 +62,11 @@ public class AssetLog {
 		this.assets = assets;
 	}
 
-	public Date getCreated_At() {
+	public LocalDateTime getCreated_At() {
 		return created_At;
 	}
 
-	public void setCreated_At(Date created_At) {
+	public void setCreated_At(LocalDateTime created_At) {
 		this.created_At = created_At;
 	}
 
@@ -81,7 +80,7 @@ public class AssetLog {
 	 
 	 @PrePersist
 	 protected void onCreate() {
-		 this.created_At = new Date();
+		 this.created_At = LocalDateTime.now();
 	 }
 	 
 	 
