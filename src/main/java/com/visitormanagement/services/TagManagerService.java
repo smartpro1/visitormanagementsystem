@@ -1,11 +1,15 @@
 package com.visitormanagement.services;
 
+import java.time.LocalDateTime;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.visitormanagement.exceptions.InvalidTagException;
 import com.visitormanagement.models.TagManager;
+import com.visitormanagement.models.VisitorLog;
 import com.visitormanagement.repositories.TagManagerRepository;
+import com.visitormanagement.repositories.VisitorLogRepository;
 
 @Service
 public class TagManagerService {
@@ -13,66 +17,109 @@ public class TagManagerService {
 	@Autowired
 	private TagManagerRepository tagManagerRepo;
 	
+	@Autowired
+	private VisitorLogRepository visitorLogRepo;
+	
 	public String generateTag() {
 		TagManager tagManager = tagManagerRepo.getById(1);
 		String availableTags = tagManager.getAvailableTags();
 		
-		if(availableTags.length() == 0) {
+		if(availableTags.length() == 0 || availableTags == null) {
 			int newMaxTag  = tagManager.getMaxTag() + 1;
 			tagManager.setMaxTag(newMaxTag);
-			String newTagsInUse = tagManager.getTagsInUse() + ", " + newMaxTag;
+			String assignedTag = "";
+			if(newMaxTag < 10) {
+				assignedTag = "00" + newMaxTag;
+			} else if(newMaxTag > 9 && newMaxTag < 100) {
+				assignedTag = "0" + newMaxTag;
+			} else {
+				assignedTag = "" +newMaxTag;
+			}
+			
+			String newTagsInUse = tagManager.getTagsInUse();
+			if(newTagsInUse.length() == 0) {
+				newTagsInUse = assignedTag;
+			} else {
+				newTagsInUse = newTagsInUse + ", " + assignedTag;
+			}
 			tagManager.setTagsInUse(newTagsInUse);
 			
-			return "TAG" + newMaxTag;
+			return "TAG" + assignedTag;
 		}
 		
 		// pick the first tag from the lot
-		String visitorTag = availableTags.split(",")[0];
+		String visitorTag = "";
+		if(availableTags.length() == 3) {
+			visitorTag = availableTags;
+			availableTags = "" ;
+		} else {
+			visitorTag = availableTags.split(",")[0];
+			
+			// remove this tag from the available tags
+			availableTags = availableTags.replace(visitorTag +", " , "") ;
+		}
 		
-		// remove this tag from the available tags
-		availableTags = availableTags.replace(visitorTag + ",", "") ;
 		
 		tagManager.setAvailableTags(availableTags);
 		
 		String tagsInUse = tagManager.getTagsInUse();
-		tagsInUse = tagsInUse + ", " + visitorTag;
+		if(tagsInUse == null || tagsInUse.length() == 0) {
+			tagsInUse = visitorTag;
+		} else {
+			tagsInUse = tagsInUse + ", " + visitorTag;
+		}
+		
 		
 		tagManager.setTagsInUse(tagsInUse);
+		
+		tagManagerRepo.save(tagManager);
 		
 		return "TAG" + visitorTag;
 	}
 	
 
-	public void signoutVisitor(String visitorTag) {
+	public void signOutVisitor(String visitorTag) {
+		VisitorLog visitorLog = visitorLogRepo.getByTag(visitorTag);
 		
 		TagManager tagManager = tagManagerRepo.getById(1);
-		String tagNum = visitorTag.substring(2);
-		boolean isTagGenuine = confirmTagExist(tagManager, tagNum);
-		if(!isTagGenuine) {
-			throw new InvalidTagException("signout declined: invalid tag");
-		}
+		String tagNum = visitorTag.substring(3);
 		
+		boolean isTagGenuine = confirmTagExist(tagManager, tagNum);
+		if(!isTagGenuine || visitorLog == null) {
+			throw new InvalidTagException("signout declined: invalid tag.");
+		}
 		
 		String firstEle =  tagManager.getTagsInUse().split(",")[0];
 		String newTagsInUse = "";
 		
 		if(tagManager.getTagsInUse().length() == 3) {
-			newTagsInUse = tagManager.getTagsInUse().replace(visitorTag, "");
+			newTagsInUse = tagManager.getTagsInUse().replace(tagNum, "");
 			
-		}else if(firstEle.equals(visitorTag)) {
-			newTagsInUse = tagManager.getTagsInUse().replaceFirst( visitorTag + ", ", "");
+		}else if(firstEle.equals(tagNum)) {
+			newTagsInUse = tagManager.getTagsInUse().replaceFirst( tagNum + ", ", "");
 			
 		} else { 
-			newTagsInUse = tagManager.getTagsInUse().replaceFirst(", " + visitorTag, "");
+			newTagsInUse = tagManager.getTagsInUse().replaceFirst(", " + tagNum, "");
 		}
 		
 		tagManager.setTagsInUse(newTagsInUse);
 		
 		StringBuilder sb = new StringBuilder(tagManager.getAvailableTags());
-		sb.append(visitorTag);
+		
+		if(tagManager.getAvailableTags().length() == 0) {
+			sb.append(tagNum);
+		} else {
+			sb.append(", " + tagNum);
+		}
+		
 		tagManager.setAvailableTags(sb.toString());
 		
 		tagManagerRepo.save(tagManager);
+		
+		
+		visitorLog.setTimeOut(LocalDateTime.now());
+		visitorLogRepo.save(visitorLog);
+		
 		}
 	
 	

@@ -25,17 +25,21 @@ import com.visitormanagement.repositories.VisitorRepository;
 public class VisitorService {
 	
 	@Autowired
-	VisitorRepository visitorRepo;
+	private VisitorRepository visitorRepo;
 	
 	@Autowired
-	VisitorLogRepository visitorLogRepo;
+	private VisitorLogRepository visitorLogRepo;
 	
 	@Autowired
-	AssetLogRepository assetLogRepo;
+	private AssetLogRepository assetLogRepo;
+	
+	@Autowired
+	private TagManagerService tagManagerService;
 
 	public String registerVisitor(VisitorRequestPayload visitorRequest, String username) {
 		
-		String visitorTag = generateVisitorTag();
+		//String visitorTag = generateVisitorTag();
+		String visitorTag = tagManagerService.generateTag();
 		String signedBy = username;
 		
 		
@@ -72,30 +76,29 @@ public class VisitorService {
 	
 	
 	
-	public void signOutVisitor(String visitorTag) {
-		VisitorLog visitorLog = visitorLogRepo.getByTag(visitorTag);
-		if(visitorLog == null) {
-			throw new InvalidTagException("signout declined: invalid visitor tag");
-		}
-		
-		
-		
-		//visitorLog.setTimeOut(new Date(System.currentTimeMillis()));
-		visitorLog.setTimeOut(LocalDateTime.now());
-		visitorLogRepo.save(visitorLog);
-		
-	}
+//	public void signOutVisitor(String visitorTag) {
+//		VisitorLog visitorLog = visitorLogRepo.getByTag(visitorTag);
+//		if(visitorLog == null) {
+//			throw new InvalidTagException("signout declined: invalid visitor tag");
+//		}
+//		
+//		
+//		visitorLog.setTimeOut(LocalDateTime.now());
+//		visitorLogRepo.save(visitorLog);
+//		
+//		
+//	}
 	
 	public List<VisitorLog> findAllVisitorsLogByMe(String adminName) {
 		List<VisitorLog> myVisitors = visitorLogRepo.findBySignedBy(adminName);
 		return myVisitors;
 	}
 	
-	public String generateVisitorTag() {
-		 int num = (int)(Math.random() * 1000);
-	     String tag = "TAG" + Integer.toString(num);
-		return tag;
-	}
+//	public String generateVisitorTag() {
+//		 int num = (int)(Math.random() * 1000);
+//	     String tag = "TAG" + Integer.toString(num);
+//		return tag;
+//	}
 	
 	public Visitor initializeVisitor(VisitorRequestPayload visitorRequest, String adminUsername) {
 		Visitor visitor = new Visitor(visitorRequest.getFullname(), visitorRequest.getPhone(),

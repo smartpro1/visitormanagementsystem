@@ -25,6 +25,7 @@ import com.visitormanagement.models.VisitorLog;
 import com.visitormanagement.payloads.DateRangeRequest;
 import com.visitormanagement.payloads.VisitorRequestPayload;
 import com.visitormanagement.services.FieldsValidationService;
+import com.visitormanagement.services.TagManagerService;
 import com.visitormanagement.services.VisitorService;
 
 @RestController
@@ -33,10 +34,13 @@ import com.visitormanagement.services.VisitorService;
 public class VisitorController {
 	
 	@Autowired
-	FieldsValidationService validateFields;
+	private FieldsValidationService validateFields;
 	
 	@Autowired 
-	VisitorService visitorService;
+	private VisitorService visitorService;
+	
+	@Autowired
+	private TagManagerService tagManagerService;
 	
 	@GetMapping("/registered")
 	public ResponseEntity<List<Visitor>> getAllVisitorsRegisteredByMe(Principal principal){
@@ -91,8 +95,8 @@ public class VisitorController {
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_SUPERADMIN')")
 	@PostMapping("logout/{visitorTag}")
 	public ResponseEntity<?> signOutVisitor(@PathVariable String visitorTag){
-		visitorService.signOutVisitor(visitorTag);
-		
+		//visitorService.signOutVisitor(visitorTag);
+		tagManagerService.signOutVisitor(visitorTag);
 			return new ResponseEntity<String>("visitor successfully logged out", HttpStatus.OK);
 			
 	}
