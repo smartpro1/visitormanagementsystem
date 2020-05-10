@@ -64,15 +64,7 @@ public class VisitorController {
     	return new ResponseEntity<Visitor>(visitor, HttpStatus.OK); 
     }
     
-    //  this works
- //   @PostMapping("/track-visitors")
-//    public ResponseEntity<?> getVisitorsLogsByDateRange(@RequestBody DateRangeRequest dateRangeRequest){
-//    	List<VisitorLog> dateRangeVisitors = visitorService.findVisitorsLogsByDateRange(dateRangeRequest.getStart(), dateRangeRequest.getEnd());
-//    	if(dateRangeVisitors == null) {
-//    		return new ResponseEntity<String>("No result found", HttpStatus.OK);
-//    	}
-//    	return new ResponseEntity<List<VisitorLog>>(dateRangeVisitors, HttpStatus.OK);
-//    }
+
     
     @PostMapping("/track-visitors")
     public Page<VisitorLog> getVisitorsLogsByDateRange(@RequestBody DateRangeRequest dateRangeRequest, Pageable pageable){

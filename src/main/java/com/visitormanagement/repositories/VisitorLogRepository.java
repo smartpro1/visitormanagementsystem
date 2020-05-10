@@ -12,9 +12,10 @@ import com.visitormanagement.models.VisitorLog;
 
 @Repository
 public interface VisitorLogRepository extends JpaRepository<VisitorLog, Long>{
-
+    
+	@Query(value="SELECT * FROM visitor_log WHERE tag =?1 AND time_out IS NULL", nativeQuery=true)
 	VisitorLog getByTag(String visitorTag);
-
+	
 	List<VisitorLog> findBySignedBy(String adminName);
     
 	// This works
@@ -25,9 +26,14 @@ public interface VisitorLogRepository extends JpaRepository<VisitorLog, Long>{
 	Page<VisitorLog> findByTimeIn(String start, String end, Pageable pageable);
 	
 	
+	
+//	@Query(value = "SELECT p FROM VisitorLog p WHERE p.tag =?1 AND p.timeOut is null")
+//	VisitorLog findByTag(String visitorTag);
 	// JPQL
 	//@Query(value = "SELECT p FROM Visitor p WHERE p.fullname =?1")
 	//Visitor findByFullname(String fullname);
+	
+	
 
 	// SQL
 	//@Query(value="SELECT * FROM visitor where fullname = ?1", nativeQuery=true)

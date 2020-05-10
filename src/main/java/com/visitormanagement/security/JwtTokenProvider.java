@@ -22,16 +22,9 @@ public class JwtTokenProvider {
 	
 	private static final Logger logger = LoggerFactory.getLogger(JwtTokenProvider.class);
 	
-    //private String jwtSecret = "JWTSUPERSECRETKEY";
-	
-	//private int jwtExpirationInMs = 604800000;
-	
 	public String generateJwtToken(Authentication authentication) {
 		
 		UserPrincipal admin = (UserPrincipal) authentication.getPrincipal();
-		
-		//Date now = new Date();
-		//Date expiryDate = new Date(now.getTime() + jwtExpirationInMs);
 		
 		Date now = new Date();
 		Date expiryDate = new Date(now.getTime() + EXPIRATION_TIME);
@@ -55,7 +48,6 @@ public class JwtTokenProvider {
 	
 	// validate jwtToken
 	public boolean validateJwtToken(String token) {
-		logger.error("got to validate jwtToken: " + token);
 		try {
 			Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token);
 			return true;
@@ -77,9 +69,6 @@ public class JwtTokenProvider {
 		Claims claims = Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token).getBody();
 		String adminId = (String)claims.get("id");
 		 return Long.parseLong(adminId);
-		
-		// Long adminId = Long.parseLong(claims.getSubject());
-		//	return adminId;
 
 	}
 

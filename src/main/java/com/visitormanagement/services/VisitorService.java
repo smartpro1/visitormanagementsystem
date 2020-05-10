@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -38,12 +39,27 @@ public class VisitorService {
 
 	public String registerVisitor(VisitorRequestPayload visitorRequest, String username) {
 		
+		// check whether visitor already exist
+		Visitor checkVisitor = visitorRepo.getByPhone(visitorRequest.getPhone());
+		
+		// check whether visitor is already signed in
+		if(checkVisitor != null) {
+			List<VisitorLog> visitorLog = checkVisitor.getVisitorLogs();
+			System.out.println(visitorLog);
+			VisitorLog visLog = visitorLog.stream().filter(vLog -> vLog.getTimeOut() == null)
+					.findFirst().orElse(null);
+			System.out.println(visLog);
+			if(visLog != null) {
+				throw new InvalidTagException("registration declined: this user is currently active.");
+			}
+		}
+		
 		//String visitorTag = generateVisitorTag();
 		String visitorTag = tagManagerService.generateTag();
 		String signedBy = username;
 		
 		
-		Visitor checkVisitor = visitorRepo.getByPhone(visitorRequest.getPhone());
+		
 		if(checkVisitor == null) {
 			
 			Visitor visitor = initializeVisitor(visitorRequest, signedBy);
@@ -75,30 +91,11 @@ public class VisitorService {
 	}
 	
 	
-	
-//	public void signOutVisitor(String visitorTag) {
-//		VisitorLog visitorLog = visitorLogRepo.getByTag(visitorTag);
-//		if(visitorLog == null) {
-//			throw new InvalidTagException("signout declined: invalid visitor tag");
-//		}
-//		
-//		
-//		visitorLog.setTimeOut(LocalDateTime.now());
-//		visitorLogRepo.save(visitorLog);
-//		
-//		
-//	}
-	
 	public List<VisitorLog> findAllVisitorsLogByMe(String adminName) {
 		List<VisitorLog> myVisitors = visitorLogRepo.findBySignedBy(adminName);
 		return myVisitors;
 	}
 	
-//	public String generateVisitorTag() {
-//		 int num = (int)(Math.random() * 1000);
-//	     String tag = "TAG" + Integer.toString(num);
-//		return tag;
-//	}
 	
 	public Visitor initializeVisitor(VisitorRequestPayload visitorRequest, String adminUsername) {
 		Visitor visitor = new Visitor(visitorRequest.getFullname(), visitorRequest.getPhone(),
@@ -134,23 +131,6 @@ public class VisitorService {
 		return visitor;
 	}
 
-// this works
-
-//	public List<VisitorLog> findVisitorsLogsByDateRange(String start, String end) {
-//		if(start.length() < 1 || end.length() < 1) {
-//			throw new InvalidDateException("Start date or end date cannot be empty");
-//		}
-//		
-//		LocalDate startDate = LocalDate.parse(start);
-//		LocalDate endDate = LocalDate.parse(end);
-//		if(startDate.isAfter(endDate)) {
-//			throw new InvalidDateException("Start date cannot be greater than end date");
-//		}
-//		
-//		List<VisitorLog> visitorsLogs = visitorLogRepo.findByTimeIn(start, end);
-//		return visitorsLogs;
-//	}
-
 
 
 	public Page<VisitorLog> findVisitorsLogsByDateRange(String start, String end, Pageable pageable) {
@@ -169,11 +149,6 @@ public class VisitorService {
 	}
 
 
-
-//	public Visitor findVisitorByFullname(String fullname) {
-//		Visitor visitor = visitorRepo.findByFullname(fullname);
-//		return visitor;
-//	}
 	
 	
 }

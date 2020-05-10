@@ -147,6 +147,16 @@ public class VisitorLog {
 	protected void onUpdate() {
 		this.timeOut = LocalDateTime.now();
 	}
+
+
+	@Override
+	public String toString() {
+		return "VisitorLog [id=" + id + ", whomToSee=" + whomToSee + ", purpose=" + purpose + ", timeIn=" + timeIn
+				+ ", tag=" + tag + ", signedBy=" + signedBy + ", timeOut=" + timeOut + ", visitor=" + visitor
+				+ ", assetLog=" + assetLog + "]";
+	}
+	
+	
 	 
 	 
 }

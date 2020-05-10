@@ -77,15 +77,21 @@ public class TagManagerService {
 		return "TAG" + visitorTag;
 	}
 	
+	
+
 
 	public void signOutVisitor(String visitorTag) {
-		VisitorLog visitorLog = visitorLogRepo.getByTag(visitorTag);
 		
+		if(visitorTag.length() != 6 || !visitorTag.startsWith("TAG")) {
+			throw new InvalidTagException("signout declined: invalid tag format.");
+		}
+		
+		VisitorLog visitorLog = visitorLogRepo.getByTag(visitorTag);
 		TagManager tagManager = tagManagerRepo.getById(1);
 		String tagNum = visitorTag.substring(3);
 		
 		boolean isTagGenuine = confirmTagExist(tagManager, tagNum);
-		if(!isTagGenuine || visitorLog == null) {
+		if(!isTagGenuine) {
 			throw new InvalidTagException("signout declined: invalid tag.");
 		}
 		
@@ -125,7 +131,7 @@ public class TagManagerService {
 	
 	
 	public boolean confirmTagExist(TagManager tagManager, String tag) {
-		String[] tagsInUseArr = tagManager.getTagsInUse().split(",");
+		String[] tagsInUseArr = tagManager.getTagsInUse().split(", ");
 		
 		
 		for(int i = 0; i < tagsInUseArr.length; i++) {
