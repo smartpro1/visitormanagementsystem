@@ -74,9 +74,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 		    		     "/**/*.js"
 		    		).permitAll()
 		    .antMatchers(ADMIN_URLS).permitAll()
+		    //.antMatchers("/api/v1/admin/register","/api/v1/admin/login","/api/v1/admin/forgot-password","/api/v1/admin/reset-password").permitAll()
 		    .anyRequest()
 		    .authenticated();
-		
+			
 		http.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
 		    
 	}

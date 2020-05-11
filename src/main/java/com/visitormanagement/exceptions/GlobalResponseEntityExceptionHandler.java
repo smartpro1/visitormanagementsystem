@@ -52,6 +52,13 @@ public class GlobalResponseEntityExceptionHandler extends ResponseEntityExceptio
 		InvalidDateExceptionResponse exceptionResponse = new InvalidDateExceptionResponse(ex.getMessage(), ex.getMessage());
 	    return new ResponseEntity(exceptionResponse, HttpStatus.BAD_REQUEST);
 	}
+	
+	
+	@ExceptionHandler
+	public final ResponseEntity<Object> handleInvalidTokenException(InvalidTokenException ex, WebRequest req){
+		InvalidTokenExceptionResponse exceptionResponse = new InvalidTokenExceptionResponse(ex.getMessage());
+	    return new ResponseEntity(exceptionResponse, HttpStatus.BAD_REQUEST);
+	}
 }
 
 

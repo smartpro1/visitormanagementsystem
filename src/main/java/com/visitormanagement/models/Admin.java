@@ -10,8 +10,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class Admin{
@@ -39,6 +38,11 @@ public class Admin{
 	 
 	 @Column(updatable = false)
 	 private LocalDateTime created_At;
+	 
+		// OneToOne with PasswordReset
+		@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy="admin")
+		@JsonIgnore
+		private PasswordReset passwordReset;
 	 
 	 @ManyToMany(fetch = FetchType.EAGER)
 	 @JoinTable(name = "users_roles", 
@@ -119,7 +123,17 @@ public class Admin{
 		public void setRoles(Set<Role> roles) {
 			this.roles = roles;
 		}
+		
+		
 	
+
+	public PasswordReset getPasswordReset() {
+			return passwordReset;
+		}
+
+		public void setPasswordReset(PasswordReset passwordReset) {
+			this.passwordReset = passwordReset;
+		}
 
 	@PrePersist
 	protected void onCreate() {
