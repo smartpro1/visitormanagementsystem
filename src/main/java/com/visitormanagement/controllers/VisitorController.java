@@ -92,4 +92,13 @@ public class VisitorController {
 			return new ResponseEntity<String>("visitor successfully logged out", HttpStatus.OK);
 			
 	}
+	
+	@GetMapping("/todays-logs")
+	public List<VisitorLog> getLogsForToday(){
+		List<VisitorLog> visitorsLogsToday = visitorService.getVisitorLogsForToday();
+		
+		if(visitorsLogsToday == null) return null;
+		
+		return visitorsLogsToday;
+	}
 }

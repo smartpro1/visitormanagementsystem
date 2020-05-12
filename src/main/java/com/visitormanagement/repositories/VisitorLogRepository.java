@@ -1,5 +1,7 @@
 package com.visitormanagement.repositories;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -24,6 +26,12 @@ public interface VisitorLogRepository extends JpaRepository<VisitorLog, Long>{
 
 	@Query(value="SELECT * FROM visitor_log WHERE time_in BETWEEN ?1 AND ?2", nativeQuery=true)
 	Page<VisitorLog> findByTimeIn(String start, String end, Pageable pageable);
+
+	@Query(value = "SELECT * FROM visitor_log WHERE time_in > ?1", nativeQuery = true)
+	List<VisitorLog> findLogsToday(LocalDateTime midNightYesterday);
+
+	
+	
 	
 	
 	
@@ -35,9 +43,5 @@ public interface VisitorLogRepository extends JpaRepository<VisitorLog, Long>{
 	
 	
 
-	// SQL
-	//@Query(value="SELECT * FROM visitor where fullname = ?1", nativeQuery=true)
-	//Visitor findByFullname(String fullname);
-	//com.visitormanagement.services.Visitor findByPhone(int phone);
 
 }

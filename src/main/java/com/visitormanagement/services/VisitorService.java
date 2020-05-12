@@ -2,6 +2,7 @@ package com.visitormanagement.services;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -146,6 +147,22 @@ public class VisitorService {
 		
 		Page<VisitorLog> visitorsLogs = visitorLogRepo.findByTimeIn(start, end, pageable);
 		return visitorsLogs;
+	}
+
+
+	public List<VisitorLog> getVisitorLogsForToday() {
+		LocalDateTime ldt = LocalDateTime.now();
+		LocalTime localTime = LocalTime.now();
+        
+        int newTimeHr = localTime.getHour();
+        int newTimeMinute = localTime.getMinute();
+        int newTimeSec = localTime.getSecond() + 1;
+
+        int convertTimeToSec = 60*60*newTimeHr + 60 * newTimeMinute + newTimeSec ;
+        LocalDateTime midNightYesterday = ldt.minusSeconds(convertTimeToSec);
+        
+		List<VisitorLog> todaysLogs = visitorLogRepo.findLogsToday(midNightYesterday);
+		return todaysLogs;
 	}
 
 
