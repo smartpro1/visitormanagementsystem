@@ -83,6 +83,7 @@ public class AdminService {
 
 	public PasswordReset generatePasswordResetToken(Admin admin) {
 		PasswordReset passwordReset = admin.getPasswordReset();
+		System.out.println(passwordReset);
 		long validityTime = 60 * 60 * 24 * 1000; // 1 day
 		Date now = new Date();
 		passwordReset.setExpiryDate(now.getTime() + validityTime);

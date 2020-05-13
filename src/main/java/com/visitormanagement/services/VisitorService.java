@@ -3,9 +3,9 @@ package com.visitormanagement.services;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Date;
+
 import java.util.List;
-import java.util.Optional;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -40,16 +40,16 @@ public class VisitorService {
 
 	public String registerVisitor(VisitorRequestPayload visitorRequest, String username) {
 		
+		// check if phone number is valid
+		checkIfPhoneNumIsValid(visitorRequest.getPhone());
 		// check whether visitor already exist
 		Visitor checkVisitor = visitorRepo.getByPhone(visitorRequest.getPhone());
 		
 		// check whether visitor is already signed in
 		if(checkVisitor != null) {
 			List<VisitorLog> visitorLog = checkVisitor.getVisitorLogs();
-			System.out.println(visitorLog);
 			VisitorLog visLog = visitorLog.stream().filter(vLog -> vLog.getTimeOut() == null)
 					.findFirst().orElse(null);
-			System.out.println(visLog);
 			if(visLog != null) {
 				throw new InvalidTagException("registration declined: this user is currently active.");
 			}
@@ -91,6 +91,16 @@ public class VisitorService {
 		return visitorTag;
 	}
 	
+	public void checkIfPhoneNumIsValid( String phone) {
+		
+		// check if phone number does not contain all digits
+        if(!(phone.matches("[0-9]+") && phone.length() > 10)) {
+			throw new InvalidPhoneNumException("The phone number " + phone + " supplied is invalid.");
+		}
+		
+		
+	}
+	
 	
 	public List<VisitorLog> findAllVisitorsLogByMe(String adminName) {
 		List<VisitorLog> myVisitors = visitorLogRepo.findBySignedBy(adminName);
@@ -125,11 +135,31 @@ public class VisitorService {
 	}
 	
 	public Visitor findVisitorByPhone(String phone) {
-		if(phone.length() < 11 || phone.length() > 14) {
+		
+		if(!(phone.matches("[0-9]+") && phone.length() > 10)) {
 			throw new InvalidPhoneNumException("The phone number " + phone + " supplied is invalid.");
 		}
+			
+//		if(phone.length() < 11 || phone.length() > 14 ) {
+//			throw new InvalidPhoneNumException("The phone number " + phone + " supplied is invalid.");
+//		}
 		Visitor visitor = visitorRepo.findByPhone(phone);
 		return visitor;
+	}
+	
+	 public List<VisitorLog> getVisitorLogsForToday() {
+		LocalDateTime ldt = LocalDateTime.now();
+		LocalTime localTime = LocalTime.now();
+        
+        int newTimeHr = localTime.getHour();
+        int newTimeMinute = localTime.getMinute();
+        int newTimeSec = localTime.getSecond() + 1;
+
+        int convertTimeToSec = 60*60*newTimeHr + 60 * newTimeMinute + newTimeSec ;
+        LocalDateTime midNightYesterday = ldt.minusSeconds(convertTimeToSec);
+        
+		List<VisitorLog> todaysLogs = visitorLogRepo.findLogsToday(midNightYesterday);
+		return todaysLogs;
 	}
 
 
@@ -145,25 +175,13 @@ public class VisitorService {
 			throw new InvalidDateException("Start date cannot be greater than end date");
 		}
 		
-		Page<VisitorLog> visitorsLogs = visitorLogRepo.findByTimeIn(start, end, pageable);
+		String endDayStr = endDate.plusDays(1).toString();
+		Page<VisitorLog> visitorsLogs = visitorLogRepo.findByTimeIn(start, endDayStr, pageable);
 		return visitorsLogs;
 	}
 
 
-	public List<VisitorLog> getVisitorLogsForToday() {
-		LocalDateTime ldt = LocalDateTime.now();
-		LocalTime localTime = LocalTime.now();
-        
-        int newTimeHr = localTime.getHour();
-        int newTimeMinute = localTime.getMinute();
-        int newTimeSec = localTime.getSecond() + 1;
 
-        int convertTimeToSec = 60*60*newTimeHr + 60 * newTimeMinute + newTimeSec ;
-        LocalDateTime midNightYesterday = ldt.minusSeconds(convertTimeToSec);
-        
-		List<VisitorLog> todaysLogs = visitorLogRepo.findLogsToday(midNightYesterday);
-		return todaysLogs;
-	}
 
 
 	

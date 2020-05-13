@@ -62,10 +62,6 @@ public class AdminController {
 	
 	@PostMapping("/register")
 	public ResponseEntity<?> registerAdmin(@Valid @RequestBody AdminRequestPayload adminRequest, BindingResult result){
-		System.out.println("got here");
-		System.out.println(adminRequest.getFullname());
-		System.out.println(adminRequest.getEmail());
-		System.out.println(adminRequest.getPassword());
 		// compare passwords
 		adminValidator.validate(adminRequest, result);
 		
