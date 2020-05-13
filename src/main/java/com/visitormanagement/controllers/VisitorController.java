@@ -64,6 +64,15 @@ public class VisitorController {
     	return new ResponseEntity<Visitor>(visitor, HttpStatus.OK); 
     }
     
+    @GetMapping("/todays-logs")
+	public List<VisitorLog> getLogsForToday(){
+		List<VisitorLog> visitorsLogsToday = visitorService.getVisitorLogsForToday();
+		
+		if(visitorsLogsToday == null) return null;
+		
+		return visitorsLogsToday;
+	}
+    
 
     
     @PostMapping("/track-visitors")
