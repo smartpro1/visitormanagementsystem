@@ -22,10 +22,7 @@ public interface VisitorLogRepository extends JpaRepository<VisitorLog, Long>{
 
     @Query(value = "SELECT * FROM visitor_log WHERE time_in > ?1", nativeQuery = true)
 	List<VisitorLog> findLogsToday(LocalDateTime midNightYesterday);
-    
-	// This works
-	//@Query(value="SELECT * FROM visitor_log WHERE time_in BETWEEN ?1 AND ?2", nativeQuery=true)
-	//List<VisitorLog> findByTimeIn(String start, String end);
+
 
 	@Query(value="SELECT * FROM visitor_log WHERE time_in BETWEEN ?1 AND ?2", nativeQuery=true)
 	Page<VisitorLog> findByTimeIn(String start, String end, Pageable pageable);
